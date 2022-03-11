@@ -1,0 +1,406 @@
+
+* Midterm 1
+
+** 1. What will scheme print
+
+*** a
+**** i
+#+BEGIN_SRC racket :require berkeley
+  (every - (keep number? '(the 1 after 909)))
+#+END_SRC
+
+***** answer
+;; (keep number? '(the 1 after 909))
+;; -> '(1 909)
+;; (every - '(1 909))
+;; -> '(-1 -909)
+
+**** ii
+#+BEGIN_SRC racket
+  ((lambda (a b) ((if (< b a) + *) b a)) 4 6)
+#+END_SRC
+
+***** answer
+;; (lambda (a b) ((if (< b a) + *) b a))
+;; -> (lambda (4 6) ((if (< 6 4) + *) 6 4))
+;; -> (lambda (4 6) (* 6 4))
+;; -> 24
+
+**** iii
+#+BEGIN_SRC racket :require berkeley
+  (word (first '(cat)) (butlast 'dog))
+#+END_SRC
+
+***** answer
+;; (word (first '(cat)) (butlast 'dog))
+;; -> (first '(cat))
+;; ==> '(cat)
+;; ==> (cons 'cat '())
+;; -> 'cat
+;; (butlast 'dog)
+;; -> 'do
+;; (word 'cat 'do)
+;; 'catdo
+
+*** b
+
+**** i
+#+BEGIN_SRC racket :require berkeley
+  (cons (list 1 2) (cons 3 4))
+#+END_SRC
+
+#+RESULTS:
+: ((1 2) 3 . 4)
+
+***** answer
+-> (cons (list 1 2) (cons 3 4))
+==> (cons 3 4)
+==> (3 . 4)
+==> (list 1 2)
+==> (1 2)
+-> ((1 2) 3 . 4)
+
+****** diagram
+#+BEGIN_SRC plantuml :file b_i.png
+  ditaa
+
+  +-+-+           +-+-+
+  | | +---------->| | |
+  +++-+           +-+-+
+   |               | |
+   v               v v
+  +++-+  +-+-+     3 4
+  | | +->| |/|
+  +-+-+  +++-+
+   |      |
+   v      v
+   1      2
+
+#+END_SRC
+
+#+RESULTS:
+[[file:b_i.png]]
+
+**** ii
+
+#+BEGIN_SRC racket :require berkeley
+  (let ((p (list 4 5)))
+    (cons (cdr p) (cddr p)))
+#+END_SRC
+
+#+RESULTS:
+: ((5))
+
+***** answer
+-> (cons (cdr p) (cddr p))
+-> (cons (5) '())
+-> '((5))
+
+****** diagram
+#+BEGIN_SRC plantuml :file b_ii.png
+  ditaa
+
+  +-+-+
+  | |/+
+  +++-+
+   |
+   v
+  +++-+
+  | |/+
+  +-+-+
+   |
+   v
+   5
+
+#+END_SRC
+
+#+RESULTS:
+[[file:b_ii.png]]
+
+
+
+**** iii
+#+BEGIN_SRC racket :require berkeley
+  (cadadr '((a (b) c) (d (e) f) (g (h) i))
+#+END_SRC
+
+#+RESULTS:
+: (e)
+
+***** answer
+-> error (missing parenthesis)
+--> supposing this is a typo and the expression should be correct
+-> (cadadr '((a (b) c) (d (e) f) (g (h) i)))
+-> (cadar '((d (e) f) (g (h) i)))
+-> (cadr '(d (e) f))
+-> (car '((e) f))
+-> '(e)
+
+****** diagram
+#+BEGIN_SRC plantuml :file b_iii.png
+  ditaa
+
+  +++-+
+  | |/+
+  +-+-+
+   |
+   v
+   e
+  
+#+END_SRC
+
+#+RESULTS:
+[[file:b_iii.png]]
+
+
+
+** 2. Orders of growth
+*** a -> foo
+#+BEGIN_SRC racket
+  (define (foo n)
+    (if (< n 2)
+        1
+        (+ (baz (- n 1))
+    (baz (- n 2)) )))
+
+  (define (baz n)
+    (+ n (- n 1)))
+#+END_SRC
+
+answered: O(2^n)
+
+wrong.. it's not doing any recursive calls
+**** right answer
+FOO is Theta(1).
+
+	Since FOO calls BAZ twice, we have to know the running time of BAZ
+	before we can figure out the running time of FOO.
+
+	BAZ does not contain any recursive calls, either to baz itself or to
+	foo.  Rather, it performs two fixed-time operations, an addition and a
+	subtraction, and so its running time is Theta(1).
+
+	Therefore, everything FOO does is fixed-time!  It calls <, +, -, and
+	BAZ, all of which are Theta(1).  And so FOO itself is also Theta(1).
+
+	The most frequent wrong answer was Theta(2^n).  People who thought
+	that put too much weight on the *form* of procedure FOO.  They saw two
+	procedure calls, and thought that the process was therefore comparable
+	to the Fibonacci computation or the Pascal's Triangle computation.
+	But in those cases, the two calls are *recursive* calls, not calls to
+	a fixed-time helper.
+
+  
+*** b
+#+BEGIN_SRC racket
+ (define (garply n)
+  (if (= n 0)
+      0
+      (+ (factorial n) (garply (- n 1))) ))
+
+  (define (factorial n)
+    (if (= n 0)
+      1
+      (* n (factorial (- n 1))) )) 
+#+END_SRC
+answered: O(n^2)
+
+**** explanation
+GARPLY is Theta(n^2).
+
+	GARPLY calls itself recursively N times, so it's tempting to think
+	that it's Theta(n), the most common wrong answer.  But each of those N
+	invocations of GARPLY includes an invocation of FACTORIAL, which is
+	itself Theta(n).  So N calls to a Theta(N) procedure makes a total of
+	N*N fixed-time operations.
+
+  
+** 3. Normal and applicative order
+In this case, it wouldn't make a difference. Since all involved procedures are primitives,
+there's nothing to be expanded.
+*** under applicative order
+2
+*** under normal order
+2
+
+** 4. Iterative and recursive proceses
+*** indicate iterative processes
+- butfirst-n
+- member?
+
+** 5. Recursive procedures
+
+#+BEGIN_SRC racket :require berkeley
+  (define (vowel? letter)
+    (member? letter '(a e i o u)))
+  (define (chop-consec-vowels w)
+    (if (and
+         (vowel? (first w))
+         (and (not (empty? (butfirst w)))
+              (vowel? (first (butfirst w)))))
+        (chop-consec-vowels (butfirst w))
+        w))
+  (define (syllables w)
+    (if (empty? w)
+        0
+        (let ((no-repeat (chop-consec-vowels w)))
+          (if (vowel? (first no-repeat))
+              (+ 1 (syllables (butfirst no-repeat)))
+              (syllables (butfirst no-repeat))))))
+
+  (display "banana=")
+  (display (syllables 'banana))
+  (newline)
+  (display "aardvark=")
+  (display (syllables 'aardvark))
+  (newline)
+  (display "cloud=")
+  (display (syllables 'cloud))
+  (newline)
+#+END_SRC
+
+#+RESULTS:
+: banana=3
+: aardvark=2
+: cloud=1
+: #<void>
+
+This is probably not the best way to solve this, but I couldn't find any errors with the approach. The official solution looks much better though:
+#+BEGIN_SRC racket :require berkeley
+  (define (syllables wd)
+    (define (chop wd)
+      (cond ((empty? wd) "")
+      ((vowel? (first wd))
+      (chop (bf wd)))
+      (else wd)) )
+    (cond ((empty? wd) 0)
+    ((vowel? (first wd)) (+ (syllables (chop wd)) 1))
+    (else (syllables (bf wd))) )) 
+#+END_SRC
+- the trick here is that it first checks for the first letter of the original word and then calls chop before the recursive call
+
+** 6. Higher order functions
+*** a.
+obs.: Shorter, as taken from the course pdf, needed to adapted to use <= instead of < for the examples to work out
+
+#+BEGIN_SRC racket :require berkeley
+  (define (shorter? a b)
+    (<= (count a) (count b)))
+
+  (define (in-order? p? items)
+    (if (empty? (bf items))
+        #t
+        (and (p? (first items) (first (bf items)))
+             (in-order? p? (bf items)))))
+  (in-order? shorter? '(i saw them standing together))
+  (in-order? shorter? '(i saw her standing there))
+  (in-order? < '(2 3 5 5 8 13))
+  (in-order? <= '(2 3 5 5 8 13))
+  (in-order? > '(23 14 7 5 2))
+#+END_SRC
+
+#+RESULTS:
+: #t
+
+*** b.
+
+#+BEGIN_SRC racket :require berkeley
+  (define (shorter? a b)
+    (<= (count a) (count b)))
+
+  (define (order-checker p?)
+    (define (iter items)
+      (if (empty? (bf items))
+          #t
+          (and (p? (first items) (first (bf items)))
+               (iter (bf items)))))
+    iter)
+
+  (define length-ordered? (order-checker shorter?))
+  (length-ordered? '(i saw them standing together))
+  (length-ordered? '(i saw her standing there))
+  ((order-checker <) '(2 3 5 5 8 13))
+  ((order-checker <=)  '(2 3 5 5 8 13))
+  ((order-checker >) '(23 14 7 5 2))
+#+END_SRC
+
+This could be defined in terms of `in-order`
+#+BEGIN_SRC racket :require berkeley
+  (define (order-checker pred)
+    (lambda (sent) (in-order? pred sent)) )
+#+END_SRC
+
+#+RESULTS:
+: #t
+
+** 7.2 Data abstraction
+
+*** a and b.
+#+BEGIN_SRC racket :require berkeley
+  (define (make-time hr mn cat) (list hr mn cat))
+  (define hour car)
+  (define minute cadr)
+  (define category caddr)
+
+  (define (time-print-form t)
+    (define (fmt-mn mn)
+      (if (< mn 10)
+          (word "0" mn)
+          mn))
+    (display (word (hour t) ":" (fmt-mn (minute t)) (category t)))
+    (newline))
+
+  (time-print-form (make-time 3 5 'pm))
+
+  (define (24-hour t)
+    (word
+     (+ (hour t)
+        (if (eq? (category t) 'am)
+            0
+            12))
+     (minute t)))
+
+  (24-hour (make-time 3 47 'pm))
+#+END_SRC
+
+#+RESULTS:
+: 3:05pm
+: 1547
+
+the above solution for b is kind-of right - but it returns a word.. we could convert it ofc, but doing everything with numbers would be the following:
+#+BEGIN_SRC racket :require berkeley
+  (define (24-hour time)
+    (+ (* (hour time) 100)
+        (minute time)
+        (if (equal? (category time) 'pm) 1200 0))) 
+#+END_SRC
+
+*** c.
+#+BEGIN_SRC racket :require berkeley
+  (define (make-time hr mn cat)
+    (if (> hr 12)
+        (list (- hr 12) mn 'pm)
+        (list hr mn cat))
+  (define hour car)
+  (define minute cadr)
+  (define category caddr)
+#+END_SRC
+
+only the internal representation should change, which means that the constructor should be used in the same way. that's one way of doing it:
+#+BEGIN_SRC racket :require berkeley
+  (define (make-time hr min cat)
+    (+ (* hr 100)
+      min
+      (if (equal? cat 'pm) 1200 0)))
+
+  (define (hour time)
+    (if (>= time 1200)
+        (- (div time 100) 12)
+        (div time 100)))
+
+  (define (minute time)
+    (remainder time 100))
+
+  (define (category time)
+    (if (>= time 1200) 'pm 'am))
+#+END_SRC

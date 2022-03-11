@@ -29,89 +29,88 @@
     (error "Berkeley.scm already loaded!!")
     #f)
 
-;(define scm? (not (exact? (/ 1 3))))
-(define scm? #t)
+(define scm? (not (exact? (/ 1 3))))
 ;;; Notice that *after* loading this file, (/ 1 3) is never exact,
 ;;; so we have to check first thing.  Naked Gambit has exact rationals,
 ;;; but naked SCM doesn't.
 
 ;;; Let's not have any random messages please.
-;(if scm?
-;    (begin
-;     (eval '(define *dev-null* (make-soft-port (vector (lambda (x) #f)
-;						       (lambda (x) #f)
-;						       #f #f #f)
-;					       OPEN_WRITE)))
-;     (set-current-error-port *dev-null*)))
+(if scm?
+    (begin
+     (eval '(define *dev-null* (make-soft-port (vector (lambda (x) #f)
+						       (lambda (x) #f)
+						       #f #f #f)
+					       OPEN_WRITE)))
+     (set-current-error-port *dev-null*)))
 
 (define nil '())
 (define true #t)
 (define false #f)
 
-;(if scm?
-;    (eval '(define (runtime)
-;	     (/ (get-internal-run-time) internal-time-units-per-second))))
+(if scm?
+    (eval '(define (runtime)
+	     (/ (get-internal-run-time) internal-time-units-per-second))))
 
 ;; crude timing program  (time (foo..))
-;(if scm?
-;    (eval '(define time (procedure->macro
-;			 (lambda(x env)
-;			   `(let*((start (runtime))
-;				  (result ,(cadr x))
-;				  (end (- (runtime) start)))
-;			      (write end)(display " seconds")(newline)
-;			      result)))))
-;    (eval '(define-macro (time . args) `(let*((start (runtime))
-;						(result ,(car args))
-;						(end (- (runtime) start)))
-;					    (write end)
-;					    (display " seconds")
-;					    (newline)
-;					    result))))
+(if scm?
+    (eval '(define time (procedure->macro
+			 (lambda(x env)
+			   `(let*((start (runtime))
+				  (result ,(cadr x))
+				  (end (- (runtime) start)))
+			      (write end)(display " seconds")(newline)
+			      result)))))
+    (eval '(define-macro (time . args) `(let*((start (runtime))
+						(result ,(car args))
+						(end (- (runtime) start)))
+					    (write end)
+					    (display " seconds")
+					    (newline)
+					    result))))
 
 ;; Originally from Jolly Chen.  Modified by Justin Gibbs.
 
-;(if (and scm? (eq? (software-type) 'unix))
-;    (begin
-;     (eval '(define (expand-name st)
-;	      ;; given a string like "~cs60a/lib" expand it to
-;	      ;; "home/po/k/classes../cs60a/lib"
-;	      (let ((file (tmpnam))
-;		    (res '()))
-;		(system (string-append "/bin/csh -cf \"glob " st " > " file "\""))
-;		;; Why read-line won't work here, I don't know
-;		(let ((port (open-io-file file)))
-;		  (set! res (read-string port))
-;		  (system (string-append "/bin/rm " file))
-;		  (close-io-port port)
-;		  res))))
-;     ;;; Load.
-;     ;;; Original Code from default SCM Init.scm.  Modified by Justin Gibbs.
-;     ;;; This load is identical to the load in Init.scm save that we use
-;     ;;; csh to glob our file names for us.  This leaves open the option
-;     ;;; of using wild cards and "~" in the argument to load.  Load does
-;     ;;; not understand multifile arguments -- a feature that would be nice
-;     ;;; to add later, since we already can glob on '*'s and '?'s.
-;     (eval '(define (load file)
-;	      ;;; Only change is the addition of the following line.
-;	      (define filesuf (expand-name file))
-;	      (define cep (current-error-port))
-;	      (set! file filesuf) 
-;	      (cond ((> (verbose) 1)
-;		     (display ";loading " cep) (write file cep) (newline cep)))
-;	      (force-output cep)
-;	      (or (try-load file)
-;		  ;;HERE is where the suffix gets specified
-;		  (begin (set! filesuf (string-append file (scheme-file-suffix)))
-;			 (try-load filesuf))
-;		  (and (procedure? could-not-open) (could-not-open) #f)
-;		  (error "LOAD couldn't find file " file))
-;	      (errno 0)
-;	      (cond ((> (verbose) 1)
-;		     (display ";done loading " cep)
-;		     (write filesuf cep)
-;		     (newline cep)
-;		     (force-output cep)))))))
+(if (and scm? (eq? (software-type) 'unix))
+    (begin
+     (eval '(define (expand-name st)
+	      ;; given a string like "~cs60a/lib" expand it to
+	      ;; "home/po/k/classes../cs60a/lib"
+	      (let ((file (tmpnam))
+		    (res '()))
+		(system (string-append "/bin/csh -cf \"glob " st " > " file "\""))
+		;; Why read-line won't work here, I don't know
+		(let ((port (open-io-file file)))
+		  (set! res (read-string port))
+		  (system (string-append "/bin/rm " file))
+		  (close-io-port port)
+		  res))))
+     ;;; Load.
+     ;;; Original Code from default SCM Init.scm.  Modified by Justin Gibbs.
+     ;;; This load is identical to the load in Init.scm save that we use
+     ;;; csh to glob our file names for us.  This leaves open the option
+     ;;; of using wild cards and "~" in the argument to load.  Load does
+     ;;; not understand multifile arguments -- a feature that would be nice
+     ;;; to add later, since we already can glob on '*'s and '?'s.
+     (eval '(define (load file)
+	      ;;; Only change is the addition of the following line.
+	      (define filesuf (expand-name file))
+	      (define cep (current-error-port))
+	      (set! file filesuf) 
+	      (cond ((> (verbose) 1)
+		     (display ";loading " cep) (write file cep) (newline cep)))
+	      (force-output cep)
+	      (or (try-load file)
+		  ;;HERE is where the suffix gets specified
+		  (begin (set! filesuf (string-append file (scheme-file-suffix)))
+			 (try-load filesuf))
+		  (and (procedure? could-not-open) (could-not-open) #f)
+		  (error "LOAD couldn't find file " file))
+	      (errno 0)
+	      (cond ((> (verbose) 1)
+		     (display ";done loading " cep)
+		     (write filesuf cep)
+		     (newline cep)
+		     (force-output cep)))))))
 
 
 ;;; SICP stuff:
@@ -170,19 +169,19 @@
 ;		   (semaphore-signal sem)
 ;		   result))))))
 
-;(if scm? (eval '(require 'process)))
+(if scm? (eval '(require 'process)))
 
-;(if scm?
-;    (eval '(define (parallel-execute . thunks)
-;	     (for-each (lambda (thunk) (add-process! (lambda (foo) (thunk))))
-;		       thunks)
-;	     (alarm-interrupt)
-;	     (process:schedule!)))
-;    (eval '(define (parallel-execute . thunks)
-;	     (for-each (lambda (thunk) (future (thunk))) thunks))))
-;
-;(if scm?
-;    (eval '(define (stop) (alarm 0) (set! process:queue (make-queue)))))
+(if scm?
+    (eval '(define (parallel-execute . thunks)
+	     (for-each (lambda (thunk) (add-process! (lambda (foo) (thunk))))
+		       thunks)
+	     (alarm-interrupt)
+	     (process:schedule!)))
+    (eval '(define (parallel-execute . thunks)
+	     (for-each (lambda (thunk) (future (thunk))) thunks))))
+
+(if scm?
+    (eval '(define (stop) (alarm 0) (set! process:queue (make-queue)))))
 
 ;;For Section 3.5.2, to check power series (exercises 3.59-3.62)
 ;;Evaluate and accumulate n terms of the series s at the given x
@@ -207,22 +206,22 @@
 		 result)
 	  result))))
 
-;(if scm?
-;    (eval '(define delay (procedure->macro
-;			  (lambda (x env)
-;			    `(memo-proc (lambda () ,(cadr x)))))))
-;    (eval '(define-macro (delay . args)
-;	      `(memo-proc (lambda () ,(car args))))))
+(if scm?
+    (eval '(define delay (procedure->macro
+			  (lambda (x env)
+			    `(memo-proc (lambda () ,(cadr x)))))))
+    (eval '(define-macro (delay . args)
+	      `(memo-proc (lambda () ,(car args))))))
 
 (define (force delayed-object)
   (delayed-object))
 
-;(if scm?
-;    (eval '(define cons-stream
-;	     (procedure->macro
-;	      (lambda(x env)`(cons ,(cadr x) (delay ,(caddr x)))))))
-;    (eval '(define-macro (cons-stream . args) 
-;              `(cons ,(car args) (delay ,(cadr args))))))
+(if scm?
+    (eval '(define cons-stream
+	     (procedure->macro
+	      (lambda(x env)`(cons ,(cadr x) (delay ,(caddr x)))))))
+    (eval '(define-macro (cons-stream . args) 
+              `(cons ,(car args) (delay ,(cadr args))))))
 
 (define (stream-car stream) (car stream))
 
@@ -1566,250 +1565,250 @@
 ;; By default, strings are numbers:
 (strings-are-numbers #t)
 
-;(if scm?
-;    (begin
-;     (eval '(define (trace:untracef fun sym)
-;	      (cond ((memq sym *traced-procedures*)
-;		     (set! *traced-procedures*
-;			   (remove! sym *traced-procedures*))
-;		     (untracef fun))
-;		    (else
-;		     (display "WARNING: not traced " (current-error-port))
-;		     (display sym (current-error-port))
-;		     (newline (current-error-port))
-;		     fun))))
-;     (eval '(define (edit file)
-;	      (ed file)
-;	      (load file)))
-;     (eval '(define read
-;	      (let ((old-read read))
-;		(lambda args
-;		  (let* ((result (apply old-read args))
-;			 (char (apply peek-char args)))
-;		    (if (end-of-line-char? char)
-;			(apply read-char args)
-;			'())
-;		    result)))))
-;     (eval `(define (end-of-line-char? char)
-;	      (eq? char ,(integer->char 10))))
-;
-;     ;; Don't get confusing "unspecified", and don't allow (define ((f x) y)..)
-;     (eval '(define base:define define))
-;     (eval '(define define-fixup
-;	      (let ((pair? pair?)
-;		    (map map)
-;		    (eq? eq?)
-;		    (car car)
-;		    (list list)
-;		    (cdr cdr)
-;		    (cadr cadr)
-;		    (caadr caadr)
-;		    (cons cons)
-;		    (cdadr cdadr)
-;		    (cddr cddr))
-;		(lambda (exps)
-;		  (map (lambda (exp)
-;			 (if (and (pair? exp)
-;				  (eq? (car exp) 'define)
-;				  (pair? (cdr exp))
-;				  (pair? (cadr exp)))
-;			     (list 'define
-;				   (caadr exp)
-;				   (cons 'lambda
-;					 (cons (cdadr exp)
-;					       (cddr exp))))
-;			     exp))
-;		       exps)))))
-;     (eval '(define define-handler
-;	      (let ((cons cons)
-;		    (null? null?)
-;		    (car car)
-;		    (cdr cdr)
-;		    (remove! remove!)
-;		    (cddr cddr)
-;		    (pair? pair?)
-;		    (cadr cadr)
-;		    (list list)
-;		    (member member)
-;		    (caadr caadr))
-;		(lambda (exp env)
-;		  (cond ((or (null? (cdr exp)) (null? (cddr exp)))
-;			 (error "Badly formed DEFINE"))
-;			((not (pair? (cadr exp)))
-;			 (cond ((not (null? env)) (cons 'base:define (cdr exp)))
-;			       ((member (cadr exp)
-;					'(define quote set! if cond else lambda
-;					   and or let cons-stream delay
-;					   begin quasiquote))
-;				(error "Can't redefine special form" (cadr exp)))
-;			       (else (eval (cons 'base:define (cdr exp)))
-;				     (set! *traced-procedures*
-;					   (remove! (cadr exp)
-;						    *traced-procedures*))
-;				     (list 'quote (cadr exp)))))
-;			((pair? (caadr exp))
-;			 (error "Badly formed DEFINE"))
-;			(else
-;			 (cond ((not (null? env))
-;				(cons 'base:define (cdr exp)))
-;			       ((member (caadr exp)
-;					'(define quote set! if cond else lambda
-;					   and or let cons-stream delay
-;					   begin quasiquote))
-;				(error "Can't redefine special form" (caadr exp)))
-;			       (else (eval (cons 'base:define
-;						 (define-fixup (cdr exp))))
-;				     (set! *traced-procedures*
-;					   (remove! (caadr exp)
-;						    *traced-procedures*))
-;				     (list 'quote (caadr exp))))))))))
-;     (eval '(define define (procedure->macro define-handler)))
-;     (eval '(define fix-message
-;	      (let ((cons cons)
-;		    (car car)
-;		    (cdr cdr)
-;		    (procedure? procedure?)
-;		    (eval eval)
-;		    (set! set!))
-;		(procedure->macro
-;		 (lambda (exp env)
-;		   (let ((old (string->symbol
-;			       (string-append "base:"
-;					      (symbol->string (cadr exp))))))
-;		     (eval `(define ,old ,(cadr exp)))
-;		     (if (procedure? (eval (cadr exp)))
-;			 `(set! ,(cadr exp)
-;				(lambda args
-;				  (apply ,old args)
-;				  'okay))
-;			 `(set! ,(cadr exp) 
-;				(procedure->macro
-;				 (lambda (exp env)
-;				   `(begin ,(cons ',old (cdr exp))
-;					   'okay)))))))))))
-;     (fix-message load)
-;     (fix-message vector-set!)
-;     (fix-message display)
-;     (fix-message write)
-;     (fix-message newline)
-;     (fix-message close-input-port)
-;     (fix-message close-output-port)
-;     (fix-message for-each)
-;     (fix-message set-car!)
-;     (fix-message set-cdr!)
-;     (fix-message transcript-on)
-;     (fix-message transcript-off)
-;     ;; (fix-message set!)
-;     (eval '(define base:set! set!))
-;     (eval '(set! set!
-;		  (procedure->macro
-;		   (lambda (exp env)
-;		     (if (member (cadr exp)
-;				 '(define quote set! if cond else lambda and or
-;				    let cons-stream delay
-;				    begin quasiquote))
-;			 (error "Can't redefine special form" (cadr exp))
-;			 `(begin (base:set! ,(cadr exp) ,(caddr exp))
-;				 'okay))))))
-;     (set-current-error-port (current-output-port))
-;
-;     (verbose 1)))
-;
-;(if scm?
-;    (begin
-;     (eval '(define scm-xcenter 0))
-;     (eval '(define scm-ycenter 0))
-;     (eval '(define pen-color 7))
-;     (eval '(define bg-color 0))
-;     (eval '(define color-makers '#((set-color! 0)
-;				    (set-color! 9)
-;				    (set-color! 10)
-;				    (set-color! 11)
-;				    (set-color! 12)
-;				    (set-color! 13)
-;				    (set-color! 14)
-;				    (set-color! 15))))
-;     (eval '(define (clearscreen)
-;	      (graphics-mode!)
-;	      (clear-graphics!)
-;	      (goto-center!)
-;	      (set! scm-xcenter (where-x))
-;	      (set! scm-ycenter (where-y))
-;	      (turn-to! -90)
-;	      (setpc pen-color)
-;	      (if turtle-shown (show-turtle #t))))
-;     (eval '(define (internal-fd dist)
-;	      (if (pendown?)
-;		  (draw dist)
-;		  (move dist))))
-;     (eval '(define (internal-rt turn)
-;	      (turn-left turn)))
-;     (eval '(define (internal-setxy newx newy)
-;	      ((if (pendown?) draw-to! move-to!)
-;	       (+ newx scm-xcenter)
-;	       (- scm-ycenter newy))))
-;     (eval '(define (internal-setheading newh)
-;	      (turn-to! (+ -90 newh))))
-;     (eval '(define (xcor)
-;	      (- (where-x) scm-xcenter)))
-;     (eval '(define (ycor)
-;	      (- scm-ycenter (where-y))))
-;     (eval '(define (heading)
-;	      (- 90 (what-direction)))))
-;    (begin
-;     (eval '(define gambit-xcor 0))
-;     (eval '(define gambit-ycor 0))
-;     (eval '(define gambit-heading 0))
-;     (eval '(define pen-color 0))
-;     (eval '(define bg-color 7))
-;     (eval '(define color-makers '#((set-rgb-color 0 0 0)
-;				    (set-rgb-color 0 0 1)
-;				    (set-rgb-color 0 1 0)
-;				    (set-rgb-color 0 1 1)
-;				    (set-rgb-color 1 0 0)
-;				    (set-rgb-color 1 0 1)
-;				    (set-rgb-color 1 1 0)
-;				    (set-rgb-color 1 1 1))))
-;     (eval '(define (clearscreen)
-;	      (clear-graphics)
-;	      (position-pen 0 0)
-;	      (set! gambit-xcor 0)
-;	      (set! gambit-ycor 0)
-;	      (set! gambit-heading 0)
-;	      (if turtle-shown (show-turtle #t))))
-;     (eval '(define (internal-fd dist)
-;	      (set! gambit-xcor (+ gambit-xcor
-;				   (* dist (degree-sin gambit-heading))))
-;	      (set! gambit-ycor (+ gambit-ycor
-;				   (* dist (degree-cos gambit-heading))))
-;	      ((if (pendown?) draw-line-to position-pen)
-;	       gambit-xcor gambit-ycor)))
-;     (eval '(define (internal-rt turn)
-;	      (set! gambit-heading (+ gambit-heading turn))
-;	      (while (lambda () (< gambit-heading 0))
-;		     (lambda () (set! gambit-heading (+ gambit-heading 360))))
-;	      (while (lambda () (>= gambit-heading 360))
-;		     (lambda () (set! gambit-heading (- gambit-heading 360))))))
-;     (eval '(define (while condition action)
-;	      (if (condition) (begin (action) (while condition action)))))
-;     (eval '(define (degree-sin angle)
-;	      (sin (/ (* angle 3.141592654) 180))))
-;     (eval '(define (degree-cos angle)
-;	      (cos (/ (* angle 3.141592654) 180))))
-;     (eval '(define (internal-setxy newx newy)
-;	      (set! gambit-xcor newx)
-;	      (set! gambit-ycor newy)
-;	      ((if (pendown?) draw-line-to position-pen)
-;	       gambit-xcor gambit-ycor)))
-;     (eval '(define (internal-setheading newh)
-;	      (set! gambit-heading newh)
-;	      (while (lambda () (< gambit-heading 0))
-;		     (lambda () (set! gambit-heading (+ gambit-heading 360))))
-;	      (while (lambda () (>= gambit-heading 360))
-;		     (lambda () (set! gambit-heading (- gambit-heading 360))))))
-;     (eval '(define (xcor) gambit-xcor))
-;     (eval '(define (ycor) gambit-ycor))
-;     (eval '(define (heading) gambit-heading))))
+(if scm?
+    (begin
+     (eval '(define (trace:untracef fun sym)
+	      (cond ((memq sym *traced-procedures*)
+		     (set! *traced-procedures*
+			   (remove! sym *traced-procedures*))
+		     (untracef fun))
+		    (else
+		     (display "WARNING: not traced " (current-error-port))
+		     (display sym (current-error-port))
+		     (newline (current-error-port))
+		     fun))))
+     (eval '(define (edit file)
+	      (ed file)
+	      (load file)))
+     (eval '(define read
+	      (let ((old-read read))
+		(lambda args
+		  (let* ((result (apply old-read args))
+			 (char (apply peek-char args)))
+		    (if (end-of-line-char? char)
+			(apply read-char args)
+			'())
+		    result)))))
+     (eval `(define (end-of-line-char? char)
+	      (eq? char ,(integer->char 10))))
+
+     ;; Don't get confusing "unspecified", and don't allow (define ((f x) y)..)
+     (eval '(define base:define define))
+     (eval '(define define-fixup
+	      (let ((pair? pair?)
+		    (map map)
+		    (eq? eq?)
+		    (car car)
+		    (list list)
+		    (cdr cdr)
+		    (cadr cadr)
+		    (caadr caadr)
+		    (cons cons)
+		    (cdadr cdadr)
+		    (cddr cddr))
+		(lambda (exps)
+		  (map (lambda (exp)
+			 (if (and (pair? exp)
+				  (eq? (car exp) 'define)
+				  (pair? (cdr exp))
+				  (pair? (cadr exp)))
+			     (list 'define
+				   (caadr exp)
+				   (cons 'lambda
+					 (cons (cdadr exp)
+					       (cddr exp))))
+			     exp))
+		       exps)))))
+     (eval '(define define-handler
+	      (let ((cons cons)
+		    (null? null?)
+		    (car car)
+		    (cdr cdr)
+		    (remove! remove!)
+		    (cddr cddr)
+		    (pair? pair?)
+		    (cadr cadr)
+		    (list list)
+		    (member member)
+		    (caadr caadr))
+		(lambda (exp env)
+		  (cond ((or (null? (cdr exp)) (null? (cddr exp)))
+			 (error "Badly formed DEFINE"))
+			((not (pair? (cadr exp)))
+			 (cond ((not (null? env)) (cons 'base:define (cdr exp)))
+			       ((member (cadr exp)
+					'(define quote set! if cond else lambda
+					   and or let cons-stream delay
+					   begin quasiquote))
+				(error "Can't redefine special form" (cadr exp)))
+			       (else (eval (cons 'base:define (cdr exp)))
+				     (set! *traced-procedures*
+					   (remove! (cadr exp)
+						    *traced-procedures*))
+				     (list 'quote (cadr exp)))))
+			((pair? (caadr exp))
+			 (error "Badly formed DEFINE"))
+			(else
+			 (cond ((not (null? env))
+				(cons 'base:define (cdr exp)))
+			       ((member (caadr exp)
+					'(define quote set! if cond else lambda
+					   and or let cons-stream delay
+					   begin quasiquote))
+				(error "Can't redefine special form" (caadr exp)))
+			       (else (eval (cons 'base:define
+						 (define-fixup (cdr exp))))
+				     (set! *traced-procedures*
+					   (remove! (caadr exp)
+						    *traced-procedures*))
+				     (list 'quote (caadr exp))))))))))
+     (eval '(define define (procedure->macro define-handler)))
+     (eval '(define fix-message
+	      (let ((cons cons)
+		    (car car)
+		    (cdr cdr)
+		    (procedure? procedure?)
+		    (eval eval)
+		    (set! set!))
+		(procedure->macro
+		 (lambda (exp env)
+		   (let ((old (string->symbol
+			       (string-append "base:"
+					      (symbol->string (cadr exp))))))
+		     (eval `(define ,old ,(cadr exp)))
+		     (if (procedure? (eval (cadr exp)))
+			 `(set! ,(cadr exp)
+				(lambda args
+				  (apply ,old args)
+				  'okay))
+			 `(set! ,(cadr exp) 
+				(procedure->macro
+				 (lambda (exp env)
+				   `(begin ,(cons ',old (cdr exp))
+					   'okay)))))))))))
+     (fix-message load)
+     (fix-message vector-set!)
+     (fix-message display)
+     (fix-message write)
+     (fix-message newline)
+     (fix-message close-input-port)
+     (fix-message close-output-port)
+     (fix-message for-each)
+     (fix-message set-car!)
+     (fix-message set-cdr!)
+     (fix-message transcript-on)
+     (fix-message transcript-off)
+     ;; (fix-message set!)
+     (eval '(define base:set! set!))
+     (eval '(set! set!
+		  (procedure->macro
+		   (lambda (exp env)
+		     (if (member (cadr exp)
+				 '(define quote set! if cond else lambda and or
+				    let cons-stream delay
+				    begin quasiquote))
+			 (error "Can't redefine special form" (cadr exp))
+			 `(begin (base:set! ,(cadr exp) ,(caddr exp))
+				 'okay))))))
+     (set-current-error-port (current-output-port))
+
+     (verbose 1)))
+
+(if scm?
+    (begin
+     (eval '(define scm-xcenter 0))
+     (eval '(define scm-ycenter 0))
+     (eval '(define pen-color 7))
+     (eval '(define bg-color 0))
+     (eval '(define color-makers '#((set-color! 0)
+				    (set-color! 9)
+				    (set-color! 10)
+				    (set-color! 11)
+				    (set-color! 12)
+				    (set-color! 13)
+				    (set-color! 14)
+				    (set-color! 15))))
+     (eval '(define (clearscreen)
+	      (graphics-mode!)
+	      (clear-graphics!)
+	      (goto-center!)
+	      (set! scm-xcenter (where-x))
+	      (set! scm-ycenter (where-y))
+	      (turn-to! -90)
+	      (setpc pen-color)
+	      (if turtle-shown (show-turtle #t))))
+     (eval '(define (internal-fd dist)
+	      (if (pendown?)
+		  (draw dist)
+		  (move dist))))
+     (eval '(define (internal-rt turn)
+	      (turn-left turn)))
+     (eval '(define (internal-setxy newx newy)
+	      ((if (pendown?) draw-to! move-to!)
+	       (+ newx scm-xcenter)
+	       (- scm-ycenter newy))))
+     (eval '(define (internal-setheading newh)
+	      (turn-to! (+ -90 newh))))
+     (eval '(define (xcor)
+	      (- (where-x) scm-xcenter)))
+     (eval '(define (ycor)
+	      (- scm-ycenter (where-y))))
+     (eval '(define (heading)
+	      (- 90 (what-direction)))))
+    (begin
+     (eval '(define gambit-xcor 0))
+     (eval '(define gambit-ycor 0))
+     (eval '(define gambit-heading 0))
+     (eval '(define pen-color 0))
+     (eval '(define bg-color 7))
+     (eval '(define color-makers '#((set-rgb-color 0 0 0)
+				    (set-rgb-color 0 0 1)
+				    (set-rgb-color 0 1 0)
+				    (set-rgb-color 0 1 1)
+				    (set-rgb-color 1 0 0)
+				    (set-rgb-color 1 0 1)
+				    (set-rgb-color 1 1 0)
+				    (set-rgb-color 1 1 1))))
+     (eval '(define (clearscreen)
+	      (clear-graphics)
+	      (position-pen 0 0)
+	      (set! gambit-xcor 0)
+	      (set! gambit-ycor 0)
+	      (set! gambit-heading 0)
+	      (if turtle-shown (show-turtle #t))))
+     (eval '(define (internal-fd dist)
+	      (set! gambit-xcor (+ gambit-xcor
+				   (* dist (degree-sin gambit-heading))))
+	      (set! gambit-ycor (+ gambit-ycor
+				   (* dist (degree-cos gambit-heading))))
+	      ((if (pendown?) draw-line-to position-pen)
+	       gambit-xcor gambit-ycor)))
+     (eval '(define (internal-rt turn)
+	      (set! gambit-heading (+ gambit-heading turn))
+	      (while (lambda () (< gambit-heading 0))
+		     (lambda () (set! gambit-heading (+ gambit-heading 360))))
+	      (while (lambda () (>= gambit-heading 360))
+		     (lambda () (set! gambit-heading (- gambit-heading 360))))))
+     (eval '(define (while condition action)
+	      (if (condition) (begin (action) (while condition action)))))
+     (eval '(define (degree-sin angle)
+	      (sin (/ (* angle 3.141592654) 180))))
+     (eval '(define (degree-cos angle)
+	      (cos (/ (* angle 3.141592654) 180))))
+     (eval '(define (internal-setxy newx newy)
+	      (set! gambit-xcor newx)
+	      (set! gambit-ycor newy)
+	      ((if (pendown?) draw-line-to position-pen)
+	       gambit-xcor gambit-ycor)))
+     (eval '(define (internal-setheading newh)
+	      (set! gambit-heading newh)
+	      (while (lambda () (< gambit-heading 0))
+		     (lambda () (set! gambit-heading (+ gambit-heading 360))))
+	      (while (lambda () (>= gambit-heading 360))
+		     (lambda () (set! gambit-heading (- gambit-heading 360))))))
+     (eval '(define (xcor) gambit-xcor))
+     (eval '(define (ycor) gambit-ycor))
+     (eval '(define (heading) gambit-heading))))
 
 (define turtle-shown #t)
 (define (showturtle)
@@ -1854,36 +1853,36 @@
 (define pendown-flag #t)
 (define penerase-flag #f)
 (define (pendown?) pendown-flag)
-;(define (pendown)
-;  (set! pendown-flag #t)
-;  (set! penerase-flag #f)
-;  (set! true-pen-color pen-color)
-;  (eval (vector-ref color-makers true-pen-color)))
-;(define pd pendown)
-;(define (penup)
-;  (set! pendown-flag #f))
-;(define pu penup)
-;(define (home) (setxy 0 0))
-;;(define cs clearscreen)
-;(define (pos) (list (xcor) (ycor)))
-;(define (setpencolor newc)
-;  (eval (vector-ref color-makers newc))
-;  (set! pen-color newc)
-;  (if turtle-shown (show-turtle #t))
-;  (if penerase-flag
-;      (eval (vector-ref color-makers bg-color))
-;      (set! true-pen-color newc)))
-;(define setpc setpencolor)
-;(define (pencolor) pen-color)
-;(define pc pencolor)
+(define (pendown)
+  (set! pendown-flag #t)
+  (set! penerase-flag #f)
+  (set! true-pen-color pen-color)
+  (eval (vector-ref color-makers true-pen-color)))
+(define pd pendown)
+(define (penup)
+  (set! pendown-flag #f))
+(define pu penup)
+(define (home) (setxy 0 0))
+(define cs clearscreen)
+(define (pos) (list (xcor) (ycor)))
+(define (setpencolor newc)
+  (eval (vector-ref color-makers newc))
+  (set! pen-color newc)
+  (if turtle-shown (show-turtle #t))
+  (if penerase-flag
+      (eval (vector-ref color-makers bg-color))
+      (set! true-pen-color newc)))
+(define setpc setpencolor)
+(define (pencolor) pen-color)
+(define pc pencolor)
 
-;(define true-pen-color pen-color)
-;(define (penerase)
-;  (set! true-pen-color bg-color)
-;  (set! pendown-flag #t)
-;  (set! penerase-flag #t)
-;  (eval (vector-ref color-makers true-pen-color)))
-;(define pe penerase)
+(define true-pen-color pen-color)
+(define (penerase)
+  (set! true-pen-color bg-color)
+  (set! pendown-flag #t)
+  (set! penerase-flag #t)
+  (eval (vector-ref color-makers true-pen-color)))
+(define pe penerase)
 
 (define turtle-base-angle (/ (* (acos (/ 1 3)) 180) 3.141592654))
 (define (show-turtle show-flag)
@@ -1903,17 +1902,17 @@
 	(if olderase (penerase) (pendown))
 	(penup))))
 
-;(if scm?
-;    (eval '(define repeat (procedure->macro
-;			   (lambda(x env)
-;			     `(repeat-helper ,(cadr x) (lambda () . ,(cddr x)))))))
-;    (eval '(define-macro (repeat . args)
-;	     `(repeat-helper ,(car args) (lambda () . ,(cdr args))))))
+(if scm?
+    (eval '(define repeat (procedure->macro
+			   (lambda(x env)
+			     `(repeat-helper ,(cadr x) (lambda () . ,(cddr x)))))))
+    (eval '(define-macro (repeat . args)
+	     `(repeat-helper ,(car args) (lambda () . ,(cdr args))))))
 
 (define (repeat-helper num thunk)
   (if (<= num 0)
       'done
       (begin (thunk) (repeat-helper (- num 1) thunk))))
 
-;(if scm?
-;    (eval '(define call/cc call-with-current-continuation)))
+(if scm?
+    (eval '(define call/cc call-with-current-continuation)))

@@ -1,0 +1,10 @@
+"fd5f185f4f0bf41c6b77460d176d14bf8bdb75ce"
+#s(undo-tree [nil ([nil ([nil ([nil (#1=[nil nil ((412 . 413) (374 . 375) (310 . 311) (283 . 284) (259 . 260) (234 . 235)) nil (25091 29857 47742 900000) 0 nil]) ((503 . 504) (474 . 475) (449 . 450) (425 . 426) (t 25091 29812 495215 100000)) nil (25091 29857 47746 800000) 0 nil]) ((50 . 62) (49 . 51) (#("\"" 0 1 (fontified nil)) . -49) (undo-tree-id1 . -1) (undo-tree-id2 . -1) (44 . 50) (43 . 45) (#("(" 0 1 (fontified nil)) . -43) (undo-tree-id3 . -1) (undo-tree-id4 . -1) (43 . 44) (42 . 43) (42 . 43) (t 25091 29806 865215 100000)) nil (25091 29812 502240 600000) 0 nil]) ((#(";(define (last l)
+;  (if (null? (cdr l))
+;      (car l)
+;      (last (cdr l))))
+;
+;(define (but-last xs) (reverse (cdr (reverse xs))))
+;(define bl but-last)
+
+" 0 1 (fontified t face font-lock-comment-delimiter-face) 1 18 (fontified t face font-lock-comment-face) 18 21 (fontified t face font-lock-comment-delimiter-face) 21 41 (fontified t face font-lock-comment-face) 41 48 (fontified t face font-lock-comment-delimiter-face) 48 56 (fontified t face font-lock-comment-face) 56 63 (fontified t face font-lock-comment-delimiter-face) 63 80 (fontified t face font-lock-comment-face) 80 81 (fontified t face font-lock-comment-delimiter-face) 81 82 (fontified t face font-lock-comment-face) 82 83 (fontified t face font-lock-comment-delimiter-face) 83 135 (fontified t face font-lock-comment-face) 135 136 (fontified t face font-lock-comment-delimiter-face) 136 157 (fontified t face font-lock-comment-face) 157 158 (fontified t)) . 43) (undo-tree-id0 . -18) (t 25091 28983 585215 100000)) nil (25091 29806 874136 200000) 0 nil]) nil nil (25091 29806 874139 100000) 0 nil] #1# 384 4 nil)
