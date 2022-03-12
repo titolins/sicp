@@ -333,7 +333,7 @@ This could be defined in terms of `in-order`
 #+RESULTS:
 : #t
 
-** 7.2 Data abstraction
+** 7. Data abstraction
 
 *** a and b.
 #+BEGIN_SRC racket :require berkeley
