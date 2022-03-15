@@ -1,4 +1,4 @@
-# SICP
+# [SICP](https://mitpress.mit.edu/sites/default/files/sicp/index.html)
 
 ## Description
 - Another repo for SICP
