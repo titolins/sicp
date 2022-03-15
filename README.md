@@ -6,10 +6,19 @@
 https://people.eecs.berkeley.edu/~bh/61a-pages/
 
 ## Setup
-This was the best I could find in terms of having the appropriate scheme setup:
-https://github.com/theurere/berkeley_cs61a_spring-2011_archive
+Since the course uses a custom scheme library, I've decided to do a dual setup.
 
-Basically:
+### Book
+- For the book, the idea was to have something bare bone, as close to [MIT scheme](https://www.gnu.org/software/mit-scheme/) as possible, but with better editor support / REPL, etc..
+- Eventually, I came across [Guile](https://www.gnu.org/software/guile/) and stucked to it
+- Minor difference I've noticed so far is in terms of guile not providing a `nil` object
+  - instead just use `'()` as recommended by the book later on
+
+### Course
+- The course requires the berkeley library
+- They do provide an old code to the library in the archive above, but loading that straight away fails in every scheme implementation I've tried
+- Eventually, I found [this repo](https://github.com/theurere/berkeley_cs61a_spring-2011_archive) with really awesome instructions
+- Basically, they have adapted the code in a racket library
 - Install racket, then:
 
 ```bash
