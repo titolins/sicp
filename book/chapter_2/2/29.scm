@@ -1,66 +1,140 @@
+
+;; ============= using list ============= ;;
+
 (define (make-mobile left right)
   (list left right))
+
+(define (left-branch mobile)
+  (car mobile))
+
+(define (right-branch mobile)
+  (cadr mobile))
 
 (define (make-branch length structure)
   (list length structure))
 
-;; a. left-branch and right-branch, branch-length and branch-structure
-(define (left-branch m)
-  (car m))
+(define (branch-length branch)
+  (car branch))
 
-(define (right-branch m)
-  (cadr m))
+(define (branch-structure branch)
+  (cadr branch))
 
-(define (branch-length b)
-  (car b))
+;; ============= using cons ============= ;;
 
-(define (branch-structure b)
-  (cadr b))
+(define (make-mobile left right)
+  (cons left right)) ; <--
 
-;; b. total-weight
+(define (left-branch mobile)
+  (car mobile))
 
-(define (total-weight m)
-  (cond ((null? m) 0)
-        ((not (pair? m)) m)
-        (else
-         (+ (total-weight (branch-structure (left-branch m)))
-            (total-weight (branch-structure (right-branch m)))))))
+(define (right-branch mobile)
+  (cdr mobile)) ; <--
 
-;; c. balanced?
-(define (torque b)
-  (* (branch-length b) (total-weight (branch-structure b))))
+(define (make-branch length structure)
+  (cons length structure)) ; <--
 
-(define (balanced? m)
-  (if (not (pair? m))
+(define (branch-length branch)
+  (car branch))
+
+(define (branch-structure branch)
+  (cdr branch)) ; <---
+
+;; besides the constructors, only cdr selectors will change (since car works the same for both lists and pairs)
+
+;; ============= total weight ============= ;;
+
+(define (total-weight mobile)
+  (cond ((null? mobile) 0)
+        ((not (pair? mobile)) mobile)
+        (else (+ (total-weight (branch-structure (left-branch mobile)))
+                 (total-weight (branch-structure (right-branch mobile)))))))
+
+(define test-total-weight (build-tester total-weight))
+(define total-weight-cases (list (make-case m1 18) (make-case m2 12)))
+(test-total-weight total-weight-cases)
+
+;; ============= balanced? ============= ;;
+
+(define (torque branch)
+  (* (branch-length branch) (total-weight (branch-structure branch))))
+
+(define (balanced? mobile)
+  (if (not (pair? mobile))
       #t
-      (and (= (torque (left-branch m)) (torque (right-branch m)))
-           (balanced? (branch-structure (left-branch m)))
-           (balanced? (branch-structure (right-branch m))))))
+      (and (= (torque (left-branch mobile)) (torque (right-branch mobile)))
+           (balanced? (branch-structure (left-branch mobile)))
+           (balanced? (branch-structure (right-branch mobile))))))
 
-;; tests
+(define test-balanced? (build-tester balanced?))
+(define balanced?-cases (list (make-case m1 #t) (make-case m2 #f)))
+(test-balanced? balanced?-cases)
+
+;; ============= tests ============= ;;
+
+;; values
+; 1.
+; weight 18
+; balanced
 (define m1 (make-mobile
             (make-branch 14 (make-mobile (make-branch 4 3) (make-branch 4 3)))
             (make-branch 7 (make-mobile (make-branch 2 6) (make-branch 2 6)))))
 
+; 2.
+; weight 12
+; unbalanced
 (define m2 (make-mobile
             (make-branch 14 (make-mobile (make-branch 1 2) (make-branch 2 3)))
             (make-branch 7 (make-mobile (make-branch 3 2) (make-branch 4 5)))))
 
-;; scheme@(guile-user) [16]> (total-weight m1)
-;; $37 = 18
+;; helpers
+(define (make-case mobile exp-res)
+  (cons mobile exp-res))
 
-;; d. using cons instead of list
-;; as long as we respect the data abstraction, we should require changes to the selectors only
-;; in this case actually, only changes to the selectors that involve cdr are required (because of cons' nature)
-(define (make-mobile left right)
-  (cons left right))
-
-(define (make-branch length structure)
-  (cons length structure))
-
-(define (right-branch m)
-  (cdr m))
-
-(define (branch-structure b)
-  (cdr b))
-
+(define (build-tester fn)
+  (define (run-tests cases)
+    (define (case-input c)
+      (car c))
+    (define (case-exp c)
+      (cdr c))
+    (define (display-line l)
+      (newline)
+      (display l)
+      (newline))
+    (define (display-case c i)
+      (display-line "==============")
+      (display-line "test case")
+      (display "i = ")
+      (display i)
+      (newline)
+      (display "mobile = ")
+      (display (case-input c))
+      (newline)
+      (display "exp = ")
+      (display (case-exp c))
+      (newline))
+    (define (success)
+      (display-line "TEST PASSED")
+      (display-line "=============="))
+    (define (fail res)
+      (display-line "TEST FAILED")
+      (display "got = ")
+      (display res)
+      (newline)
+      (display-line "=============="))
+    (define (finished)
+      (display-line "==============")
+      (display-line "finished tests")
+      (display-line "=============="))
+    (define (run-case c i)
+      (display-case c i)
+      (let ((res (fn (case-input c))))
+        (if (eq? res (case-exp c))
+            (success)
+            (fail res))))
+    (define (iter cases i)
+      (if (null? cases)
+          #t
+          (and (run-case (car cases) i)
+              (iter (cdr cases) (+ i 1)))))
+    (iter cases 0))
+  run-tests)
