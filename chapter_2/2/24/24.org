@@ -1,0 +1,51 @@
+
+* code
+#+BEGIN_SRC racket
+  (list 1 (list 2 (list 3 4)))
+#+END_SRC
+
+#+RESULTS:
+: (1 (2 (3 4)))
+
+* box and pointer
+#+BEGIN_SRC plantuml :file 24_box.png
+  ditaa
+
+  +-+-+  +-+-+
+  |o|o+->|o|/|
+  +++-+  +++-+
+   |      |
+   v      v
+   1     +++-+  +-+-+
+         |o|o+->+o|/|
+         +++-+  +-+-+
+          |      |
+          v      v
+          2     +++-+  +-+-+
+                |o|o+->|o|/|
+                +++-+  +++-+
+                 |      |
+                 v      v
+                 3      4
+
+#+END_SRC
+
+#+RESULTS:
+[[file:24_box.png]]
+
+* tree
+
+#+BEGIN_SRC plantuml :file 24_tree.png
+  @startmindmap
+  ,* (1 (2 (3 4)))
+  ,** 1
+  ,** (2 (3 4))
+  ,*** 2
+  ,*** (3 4)
+  ,**** 3
+  ,**** 4
+  @endmindmap
+#+END_SRC
+
+#+RESULTS:
+[[file:24_tree.png]]
