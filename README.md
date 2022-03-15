@@ -21,3 +21,9 @@ raco pkg install --auto planet-dyoo-simply-scheme1
 ```scheme
 (require berkeley)
 ```
+
+## Structure
+- CS61A skips some exercises and also switches the orders from the first chapter
+- Because of that I've split the course and book materials
+- all exercises from the book (asked or not in CS61A), are inside `book`
+- exercises from the course (homeworks / projects / midterms) are in CS61A
