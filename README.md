@@ -31,6 +31,14 @@ raco pkg install --auto planet-dyoo-simply-scheme1
 (require berkeley)
 ```
 
+### Emacs
+- If you'd like to do the full immersion and start on emacs as well, I can recommend [spacemacs](https://www.spacemacs.org/)
+- It's a bit bloated but eases up the transitioning (especially if you're used to vim as I am)
+- The configuration with evil-mode works quite well out of the box, and setting up racket and guile is as easy as enabling the respective layers:
+  - https://develop.spacemacs.org/layers/+lang/scheme/README.html
+  - https://develop.spacemacs.org/layers/+lang/racket/README.html
+- Since racket uses `.rkt` extension (instead of the standard `.scm`), emacs will switch the major mode between them seamlessly
+
 ## Structure
 - CS61A skips some exercises and also switches the orders from the first chapter
 - Because of that I've split the course and book materials
