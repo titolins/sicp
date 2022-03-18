@@ -4,6 +4,15 @@
         ((pair? (car x)) (append (fringe (car x)) (fringe (cdr x))))
         (else (append (list (car x)) (fringe (cdr x))))))
 
+
+;; book gives a better definition later on
+(define (fringe tree)
+  (cond ((null? tree) '())
+        ((not (pair? tree)) (list tree))
+        (else (append (fringe (car tree))
+                      (fringe (cdr tree))))))
+
+
 ;; seemed a lot easier but it's just counter-intuitive that it can't be done with cons here..
 ;; or maybe it can? :D
 
