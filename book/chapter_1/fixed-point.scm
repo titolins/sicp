@@ -20,8 +20,9 @@
 (define (newton-transform g)
   (lambda (x)
     (- x (/ (g x) ((deriv g) x)))))
-                                        ;(define (newtons-method g guess)
-                                        ;  (fixed-point (newton-transform g) guess))
+
+;; (define (newtons-method g guess)
+;;   (fixed-point (newton-transform g) guess))
 
 (define (fixed-point-of-transform g transform guess)
   (fixed-point (transform g) guess))
